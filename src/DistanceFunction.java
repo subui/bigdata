@@ -1,6 +1,6 @@
 
 public interface DistanceFunction {
 
-	float sim();
+	float calculate(int[] vector1, int[] vector2);
 	
 }
