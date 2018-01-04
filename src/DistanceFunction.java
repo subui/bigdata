@@ -1,6 +1,6 @@
 
 public interface DistanceFunction {
 
-	float calculate(int[] vector1, int[] vector2);
+	double calculate(double[] vector1, double[] vector2);
 	
 }
