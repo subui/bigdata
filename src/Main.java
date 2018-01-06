@@ -36,6 +36,7 @@ public class Main {
 			}
 			return dotProduct / (Math.sqrt(norm1) * Math.sqrt(norm2));
 		});
+		cf.normalize();
 
 		cf.printRecommendation();
 
