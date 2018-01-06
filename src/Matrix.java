@@ -9,8 +9,8 @@ import javafx.util.Pair;
 public class Matrix implements Cloneable {
 
 	private final List<Model> data;
-	private Set<Integer> users;
-	private Set<Integer> items;
+	private Set<String> users;
+	private Set<String> items;
 
 	public Matrix() {
 		data = new ArrayList<>();
@@ -22,7 +22,7 @@ public class Matrix implements Cloneable {
 		return users.size();
 	}
 
-	public List<Integer> getListUsers() {
+	public List<String> getListUsers() {
 		return new ArrayList<>(users);
 	}
 
@@ -30,16 +30,16 @@ public class Matrix implements Cloneable {
 		return items.size();
 	}
 
-	public List<Integer> getListItems() {
+	public List<String> getListItems() {
 		return new ArrayList<>(items);
 	}
 	
-	public double[] getVectorRatingByUser(int user) {
+	public double[] getVectorRatingByUser(String user) {
 		double[] vector = new double[items.size()];
-		List<Pair<Integer, Double>> items = getItemsRatedByUser(user);
+		List<Pair<String, Double>> items = getItemsRatedByUser(user);
 		for (int i = 0; i < this.items.size(); i++) {
 			final int index = i;
-			Pair<Integer, Double> pair = items.stream()
+			Pair<String, Double> pair = items.stream()
 					.filter(x -> x.getKey() == getListItems().get(index))
 					.findFirst().orElse(null);
 			vector[i] = pair != null ? pair.getValue() : 0;
@@ -47,27 +47,27 @@ public class Matrix implements Cloneable {
 		return vector;
 	}
 
-	public List<Pair<Integer, Double>> getItemsRatedByUser(int user) {
+	public List<Pair<String, Double>> getItemsRatedByUser(String user) {
 		return data.stream()
 				.filter(x -> x.getUser() == user)
-				.map(x -> new Pair<Integer, Double>(x.getItem(), x.getRating()))
+				.map(x -> new Pair<String, Double>(x.getItem(), x.getRating()))
 				.collect(Collectors.toList());
 	}
 
-	public List<Pair<Integer, Double>> getUsersRatedItem(int item) {
+	public List<Pair<String, Double>> getUsersRatedItem(String item) {
 		return data.stream()
 				.filter(x -> x.getItem() == item)
-				.map(x -> new Pair<Integer, Double>(x.getUser(), x.getRating()))
+				.map(x -> new Pair<String, Double>(x.getUser(), x.getRating()))
 				.collect(Collectors.toList());
 	}
 
-	public void add(int user, int item, double rating) {
+	public void add(String user, String item, double rating) {
 		data.add(new Model(user, item, rating));
 		users.add(user);
 		items.add(item);
 	}
 	
-	public void updateRating(int user, int item, double rating) {
+	public void updateRating(String user, String item, double rating) {
 		try {
 			data.stream()
 				.filter(x -> x.getUser() == user && x.getItem() == item)

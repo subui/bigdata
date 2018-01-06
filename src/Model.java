@@ -1,21 +1,21 @@
 
 public final class Model {
 	
-	private int user;
-	private int item;
+	private String user;
+	private String item;
 	private double rating;
 	
-	public Model(int user, int item, double rating) {
+	public Model(String user, String item, double rating) {
 		this.user = user;
 		this.item = item;
 		this.rating = rating;
 	}
 	
-	public int getUser() {
+	public String getUser() {
 		return user;
 	}
 	
-	public int getItem() {
+	public String getItem() {
 		return item;
 	}
 	
