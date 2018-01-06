@@ -2,7 +2,11 @@
 public class Main {
 
 	public static void main(String[] args) {
+		String filePath = "E:/HUST/HUST4/BigData/amazon-meta.txt/amazon-meta.txt";
 		Matrix data = new Matrix();
+//		ReadFile readFile = new ReadFile(filePath, data);
+//		readFile.readFile();
+//		System.out.println(readFile.totalReview);
 		data.add("0", "0", 5);
 		data.add("0", "1", 4);
 		data.add("0", "3", 2);
