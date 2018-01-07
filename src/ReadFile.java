@@ -25,14 +25,9 @@ public class ReadFile {
 		try {
 			inputStream = Files.lines(Paths.get(strFilePath), StandardCharsets.UTF_8);
             inputStream.filter(	x ->	x.toString().contains("Id:") 
-            						||	x.toString().contains("cutomer:") 
+            						||	x.toString().contains("cutomer:")
             			)
-            			.forEach(x -> {	getData(x.toString());
-            							System.out.print("User: " + user + " ");
-            							System.out.print("Item: " + item + " ");
-            							System.out.print("Rating: " + rating + "\n");
-            						}
-            					);
+            			.forEach(x -> getData(x.toString()));
         }catch(IOException e){
 			e.printStackTrace();
 		}
@@ -46,8 +41,9 @@ public class ReadFile {
 		else if(str.contains("cutomer:")){
 			user = str.split(" +")[3];
 			rating = Double.parseDouble(str.split(" +")[5]);
+			System.out.print("User: " + user + " Item: " + item + " Rating: " + rating + "\n");
 			// gioi han du lieu
-			if(totalReview <= 1000)
+			if(totalReview <= 50)
 				data.add(user, item, rating);
 			totalReview++;
 		}
