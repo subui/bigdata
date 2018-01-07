@@ -1,3 +1,6 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -24,9 +27,9 @@ public class ReadFile {
 
 		try {
 			inputStream = Files.lines(Paths.get(strFilePath), StandardCharsets.UTF_8);
-            inputStream.filter(	x ->	x.toString().contains("Id:") 
+            inputStream/*.filter(	x ->	x.toString().contains("Id:") 
             						||	x.toString().contains("cutomer:")
-            			)
+            			)*/
             			.forEach(x -> getData(x.toString()));
         }catch(IOException e){
 			e.printStackTrace();
@@ -35,17 +38,20 @@ public class ReadFile {
 	}
 	
 	private void getData(String str){
-		if(str.contains("Id:")){
+		String[] strr = str.split(" ");
+		data.add(strr[0], strr[1], Double.parseDouble(strr[2]));
+		totalReview++;
+		/*if(str.contains("Id:")){
 			item = str.split(" +")[1];
 		}
 		else if(str.contains("cutomer:")){
 			user = str.split(" +")[3];
 			rating = Double.parseDouble(str.split(" +")[5]);
-			System.out.print("User: " + user + " Item: " + item + " Rating: " + rating + "\n");
+			//System.out.print("User: " + user + " Item: " + item + " Rating: " + rating + "\n");
 			// gioi han du lieu
-			if(totalReview <= 50)
+			//if(totalReview <= 50)
 				data.add(user, item, rating);
 			totalReview++;
-		}
+		}*/
 	}
 }
