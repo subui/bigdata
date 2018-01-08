@@ -1,85 +1,62 @@
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Map;
 
-import javafx.util.Pair;
+public class Matrix {
 
-public class Matrix implements Cloneable {
-
-	private final List<Model> data;
-	private Set<String> users;
-	private Set<String> items;
+	private final Map<String, Map<String, Double>> dataUser;
+	private final Map<String, Map<String, Double>> dataItem;
 
 	public Matrix() {
-		data = new ArrayList<>();
-		users = new HashSet<>();
-		items = new HashSet<>();
+		dataUser = new HashMap<>();
+		dataItem = new HashMap<>();
 	}
 
 	public int userCount() {
-		return users.size();
+		return dataUser.size();
 	}
 
 	public List<String> getListUsers() {
-		return new ArrayList<>(users);
+		return new ArrayList<>(dataUser.keySet());
 	}
 
 	public int itemCount() {
-		return items.size();
+		return dataItem.size();
 	}
 
 	public List<String> getListItems() {
-		return new ArrayList<>(items);
+		return new ArrayList<>(dataItem.keySet());
 	}
 	
 	public double[] getVectorRatingByUser(String user) {
-		double[] vector = new double[items.size()];
-		List<Pair<String, Double>> items = getItemsRatedByUser(user);
-		for (int i = 0; i < this.items.size(); i++) {
-			final int index = i;
-			Pair<String, Double> pair = items.stream()
-					.filter(x -> x.getKey() == getListItems().get(index))
-					.findFirst().orElse(null);
-			vector[i] = pair != null ? pair.getValue() : 0;
-		}
-		return vector;
+		Map<String, Double> items = getItemsRatedByUser(user);
+		return getListItems().stream().mapToDouble(x -> items.containsKey(x) ? items.get(x) : 0).toArray();
 	}
 
-	public List<Pair<String, Double>> getItemsRatedByUser(String user) {
-		return data.stream()
-				.filter(x -> x.getUser() == user)
-				.map(x -> new Pair<String, Double>(x.getItem(), x.getRating()))
-				.collect(Collectors.toList());
+	public Map<String, Double> getItemsRatedByUser(String user) {
+		return dataUser.get(user);
 	}
 
-	public List<Pair<String, Double>> getUsersRatedItem(String item) {
-		return data.stream()
-				.filter(x -> x.getItem() == item)
-				.map(x -> new Pair<String, Double>(x.getUser(), x.getRating()))
-				.collect(Collectors.toList());
+	public Map<String, Double> getUsersRatedItem(String item) {
+		return dataItem.get(item);
 	}
 
 	public void add(String user, String item, double rating) {
-		data.add(new Model(user, item, rating));
-		users.add(user);
-		items.add(item);
+		if (!dataUser.containsKey(user)) {
+			dataUser.put(user, new HashMap<>());
+		}
+		dataUser.get(user).put(item, rating);
+
+		if (!dataItem.containsKey(item)) {
+			dataItem.put(item, new HashMap<>());
+		}
+		dataItem.get(item).put(user, rating);
 	}
 	
 	public void updateRating(String user, String item, double rating) {
-		try {
-			data.stream()
-				.filter(x -> x.getUser() == user && x.getItem() == item)
-				.findFirst().orElse(null)
-				.setRating(rating);
-		} catch (NullPointerException e) {
-			//
-		}
-	}
-
-	protected Matrix clone() throws CloneNotSupportedException {
-		return (Matrix) super.clone();
+		dataUser.get(user).put(item, rating);
+		dataItem.get(item).put(user, rating);
 	}
 
 }

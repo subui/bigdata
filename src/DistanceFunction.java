@@ -1,6 +1,7 @@
+import java.util.Map;
 
 public interface DistanceFunction {
 
-	double calculate(double[] vector1, double[] vector2);
+	double calculate(Map<String, Double> vector1, Map<String, Double> vector2);
 	
 }

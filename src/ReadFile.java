@@ -35,15 +35,16 @@ public class ReadFile {
 	}
 	
 	private void getData(String str){
+		if (totalReview > 1000000) return;
 		if(str.contains("Id:")){
 			item = str.split(" +")[1];
 		}
 		else if(str.contains("cutomer:")){
 			user = str.split(" +")[3];
 			rating = Double.parseDouble(str.split(" +")[5]);
-			System.out.print("User: " + user + " Item: " + item + " Rating: " + rating + "\n");
+			//System.out.print("User: " + user + " Item: " + item + " Rating: " + rating + "\n");
 			// gioi han du lieu
-			if(totalReview <= 50)
+			//if(totalReview <= 50)
 				data.add(user, item, rating);
 			totalReview++;
 		}
