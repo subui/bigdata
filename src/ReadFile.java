@@ -35,6 +35,7 @@ public class ReadFile {
 	}
 	
 	private void getData(String str){
+		if (totalReview > 1000000) return;
 		if(str.contains("Id:")){
 			item = str.split(" +")[1];
 		}

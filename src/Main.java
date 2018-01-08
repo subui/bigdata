@@ -1,3 +1,4 @@
+import java.util.Map;
 import java.util.Map.Entry;
 
 public class Main {
@@ -36,21 +37,35 @@ public class Main {
 			double dotProduct = 0.0;
 			double norm1 = 0.0;
 			double norm2 = 0.0;
-			for (Entry<String, Double> v1 : vector1.entrySet()) {
-				if (vector2.containsKey(v1.getKey()))
-					dotProduct += v1.getValue() * vector2.get(v1.getKey());
-				
-				norm1 += Math.pow(v1.getValue(), 2);
+			Map<String, Double> v1, v2;
+			if (vector1.size() < vector2.size()) {
+				v1 = vector1;
+				v2 = vector2;
+			} else {
+				v1 = vector2;
+				v2 = vector1;
 			}
-			for (Entry<String, Double> v2 : vector2.entrySet()) {
-				norm2 += Math.pow(v2.getValue(), 2);
+			for (Entry<String, Double> entryv1 : v1.entrySet()) {
+				if (v2.containsKey(entryv1.getKey()))
+					dotProduct += entryv1.getValue() * v2.get(entryv1.getKey());
+				
+				norm1 += Math.pow(entryv1.getValue(), 2);
+			}
+			
+			if (dotProduct == 0 || Double.isNaN(dotProduct) || norm1 == 0 || Double.isNaN(norm1))
+				return 0;
+			
+			for (Entry<String, Double> entryv2 : v2.entrySet()) {
+				norm2 += Math.pow(entryv2.getValue(), 2);
 			}
 			return dotProduct / (Math.sqrt(norm1 * norm2));
 		});
 		cf.normalize();
 
-		cf.printRecommendation("A2LQ8QJMCGKSGD");
-		//cf.printRecommendation();
+		long time = System.currentTimeMillis();
+		//cf.printRecommendation("A1LO05OQR2UAG2");
+		cf.printRecommendation();
+		System.out.print(System.currentTimeMillis() - time);
 
 	}
 

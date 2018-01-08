@@ -3,7 +3,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class CF {
 
@@ -21,6 +23,9 @@ public class CF {
 		this.k = k;
 		this.distFunc = distFunc;
 		this.uuCF = uuCF;
+
+		System.out.println("User count: " + data.userCount());
+		System.out.println("Item count: " + data.itemCount());
 	}
 
 	public CF(Matrix data, int k, DistanceFunction distFunc) {
@@ -29,7 +34,6 @@ public class CF {
 
 	public void normalize() {
 		System.out.println("Normalizing...");
-
 		for (String user : listUsers) {
 			Map<String, Double> items = data.getItemsRatedByUser(user);
 
@@ -47,10 +51,11 @@ public class CF {
 		// value: similarity
 		Map<String, Double> similarity = new HashMap<>();
 		Map<String, Double> vector1 = data.getItemsRatedByUser(user);
+		if (vector1.size() == 1) return 0;
 		
 		for (Entry<String, Double> entry : users.entrySet()) {
 			Map<String, Double> vector2 = data.getItemsRatedByUser(entry.getKey());
-			similarity.put(entry.getKey(), distFunc.calculate(vector1, vector2));
+			similarity.put(entry.getKey(), vector2.size() == 1 ? 0 : distFunc.calculate(vector1, vector2));
 		}
 
 		Map<String, Double> sortedSimilarity = new TreeMap<String, Double>(new ValueComparator(similarity));
@@ -80,37 +85,96 @@ public class CF {
 				: _pred(item, user);
 	}
 	
-	private List<String> recommend(String user, boolean normalized) {
+	private List<String> recommend(String user) {
 		Map<String, Double> items = data.getItemsRatedByUser(user);
-		List<String> recommendedItems = new ArrayList<>();
-		int i = 0;
-		for (String item : listItems) {
-			System.out.println((++i) + "/" + data.itemCount());
+		Set<String> recommendedItems = new TreeSet<>((arg1, arg2) -> Double.parseDouble(arg1) > Double.parseDouble(arg2) ? 1 : -1);
+
+		int nThread = 8;
+		Thread[] thread = new Thread[nThread];
+		int step = data.itemCount() / nThread;
+		for (int i = 0; i < nThread; i++) {
+			final int index = i;
+			thread[i] = new Thread(() -> {
+				for (int j = index * step; j < (index + 1) * step; j++) {
+					String item = listItems.get(j);
+					if (items.containsKey(item)) continue;
+					double rating = pred(user, item);
+					if (rating > 0) {
+						recommendedItems.add(item);
+					}
+				}
+			});
+		}
+		
+		for (Thread t : thread) {
+			t.start();
+		}
+		
+		for (Thread t : thread) {
+			try {
+				t.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		/*for (String item : listItems) {
 			if (items.containsKey(item)) continue;
 			double rating = pred(user, item);
 			if (rating > 0) {
 				recommendedItems.add(item);
 			}
-		}
+		}*/
 		
-		return recommendedItems;
+		return new ArrayList<>(recommendedItems);
 	}
 	
 	public void printRecommendation() {
 		System.out.println("Recommendation: ");
-		for (String user : data.getListUsers()) {
-			List<String> recommendedItems = recommend(user, true);
+		int nThread = 8;
+		Thread[] thread = new Thread[nThread];
+		int step = data.userCount() / nThread;
+		for (int i = 0; i < nThread; i++) {
+			final int index = i;
+			thread[i] = new Thread(() -> {
+				for (int j = index * step; j < (index + 1) * step; j++) {
+					String user = listUsers.get(j);
+					List<String> recommendedItems = recommend(user);
+					if (uuCF) {
+						System.out.println("\tRecommend item(s): " + recommendedItems + " to user " + user);
+					} else {
+						System.out.println("\tRecommend item " + user + " to user(s) " + recommendedItems);
+					}
+				}
+			});
+		}
+		
+		for (Thread t : thread) {
+			t.start();
+		}
+		
+		for (Thread t : thread) {
+			try {
+				t.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		/*for (String user : data.getListUsers()) {
+			List<String> recommendedItems = recommend(user);
 			if (uuCF) {
 				System.out.println("\tRecommend item(s): " + recommendedItems + " to user " + user);
 			} else {
 				System.out.println("\tRecommend item " + user + " to user(s) " + recommendedItems);
 			}
-		}
+		}*/
 	}
 	
 	public void printRecommendation(String user) {
 		System.out.println("Recommendation: ");
-		List<String> recommendedItems = recommend(user, true);
+		List<String> recommendedItems = recommend(user);
 		if (uuCF) {
 			System.out.println("\tRecommend item(s): " + recommendedItems + " to user " + user);
 		} else {
