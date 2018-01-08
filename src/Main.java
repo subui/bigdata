@@ -1,9 +1,10 @@
+import java.util.Map.Entry;
 
 public class Main {
 
 	public static void main(String[] args) {
-		String filePath = "amazon-meta.txt";
 		Matrix data = new Matrix();
+		String filePath = "amazon-meta.txt";
 		ReadFile readFile = new ReadFile(filePath, data);
 		readFile.readFile();
 		System.out.println(readFile.totalReview);
@@ -35,16 +36,21 @@ public class Main {
 			double dotProduct = 0.0;
 			double norm1 = 0.0;
 			double norm2 = 0.0;
-			for (int i = 0; i < vector1.length; i++) {
-				dotProduct += vector1[i] * vector2[i];
-				norm1 += Math.pow(vector1[i], 2);
-				norm2 += Math.pow(vector2[i], 2);
+			for (Entry<String, Double> v1 : vector1.entrySet()) {
+				if (vector2.containsKey(v1.getKey()))
+					dotProduct += v1.getValue() * vector2.get(v1.getKey());
+				
+				norm1 += Math.pow(v1.getValue(), 2);
 			}
-			return dotProduct / (Math.sqrt(norm1) * Math.sqrt(norm2));
+			for (Entry<String, Double> v2 : vector2.entrySet()) {
+				norm2 += Math.pow(v2.getValue(), 2);
+			}
+			return dotProduct / (Math.sqrt(norm1 * norm2));
 		});
 		cf.normalize();
 
-		cf.printRecommendation();
+		cf.printRecommendation("A2LQ8QJMCGKSGD");
+		//cf.printRecommendation();
 
 	}
 
