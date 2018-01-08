@@ -1,14 +1,8 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Map;
-import java.util.Map.Entry;
 
 public class Main {
 
 	public static void main(String[] args) {
-		String filePath = "data.txt";
+		String filePath = "amazon-meta.txt";
 		Matrix data = new Matrix();
 		ReadFile readFile = new ReadFile(filePath, data);
 		readFile.readFile();
